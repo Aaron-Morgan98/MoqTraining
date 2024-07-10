@@ -1,21 +1,39 @@
+using Moq;
+using MoqKata.Main;
+using MoqKata.Main.Interfaces;
 using Xunit;
 
 namespace MoqKata.Tests;
 
 public class UnitTest1
 {
+    private readonly SystemUnderTest _sut;
+
+    public UnitTest1()
+    {
+        var testDependency1 = new Mock<IDependency1>();
+        var testDependency2 = new Mock<IDependency2>();
+
+        _sut = new SystemUnderTest(testDependency1.Object, testDependency2.Object);
+    }
 
     [Fact]
     public void Method1_Returns_Input_As_String()
     {
         //TODO - #1 - Verify that when the 'Method1' is called with an int, that it returns the string representation of the input
+        //arrange
+        var input = 25;
+        //act
+        var result = _sut.Method1(input);
+        //assert
+        Assert.Equal("25", result);
     }
 
     [Fact]
     public void Method2_Returns_Property1_Of_Dependency1()
     {
         //TODO - #2 - Verify that the result of calling sut.Method2() returns the value of 'Property1' of the IDependency1
-
+        
 
     }
 
