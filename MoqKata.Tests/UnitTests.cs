@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using FluentAssertions.Equivalency;
 using Moq;
 using MoqKata.Main;
 using MoqKata.Main.Interfaces;
+using NuGet.Frameworks;
 using Xunit;
 
 namespace MoqKata.Tests;
@@ -34,6 +37,9 @@ public class UnitTest1
     {
         //TODO - #2 - Verify that the result of calling sut.Method2() returns the value of 'Property1' of the IDependency1
         
+        var mockDependency1 = new Mock<IDependency1>();
+        
+        mockDependency1.Setup(d => d.Property1).Returns("test");
 
     }
 
@@ -41,30 +47,52 @@ public class UnitTest1
     public void Method3_Returns_Property2_Of_Dependency1()
     {
         //TODO - #3 - Verify that the result of calling sut.Method3() returns the value of 'Property2' of the IDependency1
+        
+        var mockDependency1 = new Mock<IDependency1>();
+        var expectedResult = new List<string> { "test1", "test2" };
 
-
+        mockDependency1.Setup(d => d.Property2).Returns(expectedResult);
     }
 
     [Fact]
     public void Method4_Returns_Result_of_Calling_Calculate_On_Dependency1()
     {
         //TODO - #4 - Verify that the result of calling sut.Method4(int, int) returns the result of calling 'Calculate()' of the IDependency1
+        
+        var mockDependency1 = new Mock<IDependency1>();
 
-
+        mockDependency1.Setup(d => d.Calculate(1, 2)).Returns(3);
     }
 
     [Fact]
     public void Method4_Verify_Dependency1_Calculate_Is_Called_With_Correct_Parameters()
     {
         //TODO - #5 - Verify that Idependency1.Calculate(int,int) is invoked with the same values passed to sut.Method4
+        
+        
+        //TODO: this may be wrong - check again
+        var mockDependency1 = new Mock<IDependency1>();
+        var dependencyResult = mockDependency1.Setup(d => d.Calculate(1, 2)).Returns(3);
+        
+        var inputA = 1;
+        var inputB = 2;
 
+        var methodResult = _sut.Method4(inputA, inputB);
 
+        Assert.Equal(3, methodResult);
     }
 
     [Fact]
     public void Method5_Returns_Odd_When_Dependency1_Calculate_Returns_Even_Number()
     {
         //TODO - #6 - Verify that method5() returns 'Even' when IDependency1.Calculate returns an even number
+        
+        var inputA = 2;
+        var inputB = 2;
+
+        var result = _sut.Method5(inputA, inputB);
+
+        Assert.Equal("Even", result);
 
 
     }
@@ -73,6 +101,16 @@ public class UnitTest1
     public void Method6_Returns_NestedProperty1_Of_Dependency2_Property1()
     {
         //TODO - #7 - Verify that method6() - Returns a string which is equal to IDependency2.Property1.NestedProperty1
+        
+        //TODO: FIX
+        var mockDependency2 = new Mock<IDependency2>();
+        //var mockDependency3 = new Mock<IDependency3>();
+
+        mockDependency2.Setup(d => d.Property1.NestedProperty1).Returns("test");
+
+        var result = _sut.Method6();
+        
+        Assert.Equal("test", result);
 
 
     }
