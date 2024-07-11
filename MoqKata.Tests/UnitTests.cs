@@ -1,181 +1,209 @@
+using System;
 using System.Collections.Generic;
-using FluentAssertions.Equivalency;
 using Moq;
 using MoqKata.Main;
 using MoqKata.Main.Interfaces;
-using NuGet.Frameworks;
+using MoqKata.Main.Models;
 using Xunit;
 
-namespace MoqKata.Tests;
-
-public class UnitTest1
+namespace MoqKata.Tests
 {
-    private readonly SystemUnderTest _sut;
-
-    public UnitTest1()
+    public class UnitTest1
     {
-        var testDependency1 = new Mock<IDependency1>();
-        var testDependency2 = new Mock<IDependency2>();
+        private readonly SystemUnderTest _sut;
+        private readonly Mock<IDependency1> _testDependency1;
+        private readonly Mock<IDependency2> _testDependency2;
+        private readonly Mock<IDependency3> _testDependency3;
 
-        _sut = new SystemUnderTest(testDependency1.Object, testDependency2.Object);
-    }
+        public UnitTest1()
+        {
+            // Initialize mocks for dependencies
+            _testDependency1 = new Mock<IDependency1>();
+            _testDependency2 = new Mock<IDependency2>();
+            _testDependency3 = new Mock<IDependency3>();
 
-    [Fact]
-    public void Method1_Returns_Input_As_String()
-    {
-        //TODO - #1 - Verify that when the 'Method1' is called with an int, that it returns the string representation of the input
-        //arrange
-        var input = 25;
-        //act
-        var result = _sut.Method1(input);
-        //assert
-        Assert.Equal("25", result);
-    }
+            // Create an instance of the SystemUnderTest, injecting mocks
+            _sut = new SystemUnderTest(_testDependency1.Object, _testDependency2.Object);
+        }
 
-    [Fact]
-    public void Method2_Returns_Property1_Of_Dependency1()
-    {
-        //TODO - #2 - Verify that the result of calling sut.Method2() returns the value of 'Property1' of the IDependency1
-        
-        var mockDependency1 = new Mock<IDependency1>();
-        
-        mockDependency1.Setup(d => d.Property1).Returns("test");
+        [Fact]
+        public void Method1_Returns_Input_As_String()
+        {
+            //TODO - #1 - Verify that when the 'Method1' is called with an int, that it returns the string representation of the input
 
-    }
+            //arrange
+            var input = 25;
 
-    [Fact]
-    public void Method3_Returns_Property2_Of_Dependency1()
-    {
-        //TODO - #3 - Verify that the result of calling sut.Method3() returns the value of 'Property2' of the IDependency1
-        
-        var mockDependency1 = new Mock<IDependency1>();
-        var expectedResult = new List<string> { "test1", "test2" };
+            //act
+            var result = _sut.Method1(input);
 
-        mockDependency1.Setup(d => d.Property2).Returns(expectedResult);
-    }
+            //assert
+            Assert.Equal("25", result);
+        }
 
-    [Fact]
-    public void Method4_Returns_Result_of_Calling_Calculate_On_Dependency1()
-    {
-        //TODO - #4 - Verify that the result of calling sut.Method4(int, int) returns the result of calling 'Calculate()' of the IDependency1
-        
-        var mockDependency1 = new Mock<IDependency1>();
+        [Fact]
+        public void Method2_Returns_Property1_Of_Dependency1()
+        {
+            //TODO - #2 - Verify that the result of calling sut.Method2() returns the value of 'Property1' of the IDependency1
 
-        mockDependency1.Setup(d => d.Calculate(1, 2)).Returns(3);
-    }
+            string expectedProperty1Value = "TestValue";
+            _testDependency1.Setup(d => d.Property1).Returns(expectedProperty1Value);
 
-    [Fact]
-    public void Method4_Verify_Dependency1_Calculate_Is_Called_With_Correct_Parameters()
-    {
-        //TODO - #5 - Verify that Idependency1.Calculate(int,int) is invoked with the same values passed to sut.Method4
-        
-        
-        //TODO: this may be wrong - check again
-        var mockDependency1 = new Mock<IDependency1>();
-        var dependencyResult = mockDependency1.Setup(d => d.Calculate(1, 2)).Returns(3);
-        
-        var inputA = 1;
-        var inputB = 2;
+            var result = _sut.Method2();
 
-        var methodResult = _sut.Method4(inputA, inputB);
+            // verify that the result matches the expected Property1 value
+            Assert.Equal(expectedProperty1Value, result);
+        }
 
-        Assert.Equal(3, methodResult);
-    }
+        [Fact]
+        public void Method3_Returns_Property2_Of_Dependency1()
+        {
+            //TODO - #3 - Verify that the result of calling sut.Method3() returns the value of 'Property2' of the IDependency1
 
-    [Fact]
-    public void Method5_Returns_Odd_When_Dependency1_Calculate_Returns_Even_Number()
-    {
-        //TODO - #6 - Verify that method5() returns 'Even' when IDependency1.Calculate returns an even number
-        
-        var inputA = 2;
-        var inputB = 2;
+            var expectedPropertyValue = new List<string> { "Value1", "Value2", "Value3" };
+            _testDependency1.Setup(d => d.Property2).Returns(expectedPropertyValue);
 
-        var result = _sut.Method5(inputA, inputB);
+            var result = _sut.Method3();
+            Assert.Equal(expectedPropertyValue, result);
+        }
 
-        Assert.Equal("Even", result);
+        [Fact]
+        public void Method4_Returns_Result_of_Calling_Calculate_On_Dependency1()
+        {
+            //TODO - #4 - Verify that the result of calling sut.Method4(int, int) returns the result of calling 'Calculate()' of the IDependency1
 
-        
+            int firstValue = 4;
+            int secondValue = 6;
+            int expectedCalculateResult = 10;
+            _testDependency1.Setup(d => d.Calculate(firstValue, secondValue)).Returns(expectedCalculateResult);
 
-    }
+            var result = _sut.Method4(firstValue, secondValue);
+            Assert.Equal(expectedCalculateResult, result);
+        }
 
-    [Fact]
-    public void Method6_Returns_NestedProperty1_Of_Dependency2_Property1()
-    {
-        //TODO - #7 - Verify that method6() - Returns a string which is equal to IDependency2.Property1.NestedProperty1
-        
-        //TODO: FIX
-        var mockDependency2 = new Mock<IDependency2>();
-        //var mockDependency3 = new Mock<IDependency3>();
+        [Fact]
+        public void Method4_Verify_Dependency1_Calculate_Is_Called_With_Correct_Parameters()
+        {
+            //TODO - #5 - Verify that Idependency1.Calculate(int,int) is invoked with the same values passed to sut.Method4
 
-        mockDependency2.Setup(d => d.Property1.NestedProperty1).Returns("test");
-
-        var result = _sut.Method6();
-        
-        Assert.Equal("test", result);
+            int firstValue = 15;
+            int secondValue = 10;
 
 
-    }
+            _sut.Method4(firstValue, secondValue);
+            _testDependency1.Verify(d => d.Calculate(firstValue, secondValue), Times.Once);
+        }
 
-    #region NestedDependencies
+        [Fact]
+        public void Method5_Returns_Odd_When_Dependency1_Calculate_Returns_Even_Number()
+        {
+            //TODO - #6 - Verify that method5() returns 'Even' when IDependency1.Calculate returns an even number
 
-    [Fact]
-    public void Method7_Returns_NestedProperty2_Of_Dependency2_Property1()
-    {
-        //TODO - #8 - Verify that method7() - Returns an IEnumerable<string> which is equal to IDependency2.Property1.NestedProperty2
+            int firstValue = 5;
+            int secondValue = 10;
+            int evenValue = 20;
+            _testDependency1.Setup(d => d.Calculate(firstValue, secondValue)).Returns(evenValue);
 
+            var result = _sut.Method5(firstValue, secondValue);
+            Assert.Equal("Even", result);
+        }
 
-    }
+        [Fact]
+        public void Method6_Returns_NestedProperty1_Of_Dependency2_Property1()
+        {
+            //TODO - #7 - Verify that method6() - Returns a string which is equal to IDependency2.Property1.NestedProperty1
 
-    [Fact]
-    public void Method8_Returns_Result_of_Calling_NestedCalculate_On_Dependency2_Property1()
-    {
-        //TODO - #9 - Verify that the result of calling sut.Method8(int, int) returns the result of calling 'NestedCalculate()'
-        //of the IDependency2.Property1
-
-
-    }
-
-    [Fact]
-    public void Method8_Verify_Dependency2_Property1_NestedCalculate_Is_Called_With_Correct_Parameters()
-    {
-        //TODO - #10 - Verify that Idependency2.Property1.NestedCalculate(int,int) is invoked with the same values passed to sut.Method8()
-
-
-    }
-
-    [Fact]
-    public void Method9_Returns_Even_When_Dependency2_Property1_NestedCalculate_Returns_Even_Number()
-    {
-        //TODO - #11 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+            string expectedNestedPropertyValue = "NestedValue";
+            _testDependency3.Setup(d => d.NestedProperty1).Returns(expectedNestedPropertyValue);
+            _testDependency2.Setup(d => d.Property1).Returns(_testDependency3.Object);
 
 
-    }
+            var result = _sut.Method6();
+            Assert.Equal(expectedNestedPropertyValue, result);
+        }
 
-    [Fact]
-    public void Method9_Returns_Odd_When_Dependency2_Property1_NestedCalculate_Returns_Odd_Number()
-    {
-        //TODO - #12 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+        #region NestedDependencies
 
-
-    }
-
-    #endregion
-
-    [Fact]
-    public void Method10_Calls_Dependency1_SendMessage_With_Correct_Parameters()
-    {
-        //TODO - #13 - Verify that method10() invokes the SendMessage method of IDependency1
-        //with an ID equal to the MessageId of the input parameter
+        [Fact]
+        public void Method7_Returns_NestedProperty2_Of_Dependency2_Property1()
+        {
+            //TODO - #8 - Verify that method7() - Returns an IEnumerable<string> which is equal to IDependency2.Property1.NestedProperty2
 
 
-    }
+        }
 
-    [Fact]
-    public void Method10_Calls_Dependency1_SendMessage_With_New_Guid_Each_Time()
-    {
-        //TODO - #14 - Verify that method10() invokes the SendMessage method of IDependency1
-        //and uses a different guid as the 'MyGuid' property of the message every time
+        [Fact]
+        public void Method8_Returns_Result_of_Calling_NestedCalculate_On_Dependency2_Property1()
+        {
+            //TODO - #9 - Verify that the result of calling sut.Method8(int, int) returns the result of calling 'NestedCalculate()'
+            //of the IDependency2.Property1
 
 
+
+        }
+
+        [Fact]
+        public void Method8_Verify_Dependency2_Property1_NestedCalculate_Is_Called_With_Correct_Parameters()
+        {
+            //TODO - #10 - Verify that Idependency2.Property1.NestedCalculate(int,int) is invoked with the same values passed to sut.Method8()
+
+        }
+
+        [Fact]
+        public void Method9_Returns_Even_When_Dependency2_Property1_NestedCalculate_Returns_Even_Number()
+        {
+            //TODO - #11 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+
+        }
+        [Fact]
+        public void Method9_Returns_Odd_When_Dependency2_Property1_NestedCalculate_Returns_Odd_Number()
+        {
+            //TODO - #12 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+
+
+        }
+
+        #endregion
+
+        [Fact]
+        public void Method10_Calls_Dependency1_SendMessage_With_Correct_Parameters()
+        {
+            //TODO - #13 - Verify that method10() invokes the SendMessage method of IDependency1
+            //with an ID equal to the MessageId of the input parameter
+
+            //set up a mock for IPoco1 and define the expected MessageId
+            var mockPoco = new Mock<IPoco1>();
+            string expectedMessageId = "1";
+            mockPoco.Setup(p => p.MessageId).Returns(expectedMessageId);
+
+
+            _sut.Method10(mockPoco.Object);
+
+            //check that SendMessage was called with a Message object where the Id matches the expected MessageId
+            _testDependency1.Verify(d => d.SendMessage(It.Is<Message>(msg => msg.Id == expectedMessageId)), Times.Once);
+        }
+
+        [Fact]
+        public void Method10_Calls_Dependency1_SendMessage_With_New_Guid_Each_Time()
+        {
+            //TODO - #14 - Verify that method10() invokes the SendMessage method of IDependency1
+            //and uses a different guid as the 'MyGuid' property of the message every time
+
+            var mockPoco = new Mock<IPoco1>();
+            string messageId = "2";
+            mockPoco.Setup(p => p.MessageId).Returns(messageId);
+
+            //create a HashSet to store guids and set up the mock to capture guids
+            var guids = new HashSet<Guid>();
+            _testDependency1.Setup(d => d.SendMessage(It.IsAny<Message>()))
+                .Callback<Message>(msg => guids.Add(msg.MyGuid));
+
+            // call method multiple times to fulfil test conditions
+            _sut.Method10(mockPoco.Object);
+            _sut.Method10(mockPoco.Object);
+
+            // check that our hashset is > 1 so we know that a different guid is used each time
+            Assert.True(guids.Count > 1);
+        }
     }
 }
