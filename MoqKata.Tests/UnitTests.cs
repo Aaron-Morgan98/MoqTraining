@@ -99,7 +99,7 @@ namespace MoqKata.Tests
         {
             //TODO - #6 - Verify that method5() returns 'Even' when IDependency1.Calculate returns an even number
 
-            int firstValue = 5;
+            int firstValue = 10;
             int secondValue = 10;
             int evenValue = 20;
             _testDependency1.Setup(d => d.Calculate(firstValue, secondValue)).Returns(evenValue);
@@ -114,8 +114,7 @@ namespace MoqKata.Tests
             //TODO - #7 - Verify that method6() - Returns a string which is equal to IDependency2.Property1.NestedProperty1
 
             string expectedNestedPropertyValue = "NestedValue";
-            _testDependency3.Setup(d => d.NestedProperty1).Returns(expectedNestedPropertyValue);
-            _testDependency2.Setup(d => d.Property1).Returns(_testDependency3.Object);
+            _testDependency2.Setup(d => d.Property1.NestedProperty1).Returns(expectedNestedPropertyValue);
 
 
             var result = _sut.Method6();
@@ -128,7 +127,11 @@ namespace MoqKata.Tests
         public void Method7_Returns_NestedProperty2_Of_Dependency2_Property1()
         {
             //TODO - #8 - Verify that method7() - Returns an IEnumerable<string> which is equal to IDependency2.Property1.NestedProperty2
+            _testDependency2.Setup(d => d.Property1.NestedProperty2)
+                .Returns(new List<string> { "Value 1", "Value 2" });
 
+            var result = _sut.Method7();
+            Assert.Equal(new List<string>{"Value 1", "Value 2"}, result);
 
         }
 
@@ -137,29 +140,53 @@ namespace MoqKata.Tests
         {
             //TODO - #9 - Verify that the result of calling sut.Method8(int, int) returns the result of calling 'NestedCalculate()'
             //of the IDependency2.Property1
+            int firstValue = 3;
+            int secondValue = 3;
+            int expectedValue = 6;
 
+            _testDependency2.Setup(d => d.Property1.NestedCalculate(firstValue, secondValue)).Returns(expectedValue);
 
-
+            var result = _sut.Method8(firstValue,secondValue);
+            Assert.Equal(6,result);
+            
         }
 
         [Fact]
         public void Method8_Verify_Dependency2_Property1_NestedCalculate_Is_Called_With_Correct_Parameters()
         {
             //TODO - #10 - Verify that Idependency2.Property1.NestedCalculate(int,int) is invoked with the same values passed to sut.Method8()
+            int firstValue = 10;
+            int secondValue = 10;
 
+            _sut.Method8(firstValue, secondValue);
+            _testDependency2.Verify(d => d.Property1.NestedCalculate(firstValue,secondValue),Times.Once);
         }
 
         [Fact]
         public void Method9_Returns_Even_When_Dependency2_Property1_NestedCalculate_Returns_Even_Number()
         {
             //TODO - #11 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+            int firstValue = 2;
+            int secondValue = 4;
+            int evenValue = 6;
 
+            _testDependency2.Setup(d => d.Property1.NestedCalculate(firstValue, secondValue)).Returns(evenValue);
+
+            var result = _sut.Method9(firstValue, secondValue);
+            Assert.Equal("Even", result);
         }
         [Fact]
         public void Method9_Returns_Odd_When_Dependency2_Property1_NestedCalculate_Returns_Odd_Number()
         {
             //TODO - #12 - Verify that method9() returns 'Even' when IDependency2.Property1.NestedCalculate returns an even number
+            int firstValue = 3;
+            int secondValue = 4;
+            int evenValue = 7;
 
+            _testDependency2.Setup(d => d.Property1.NestedCalculate(firstValue, secondValue)).Returns(evenValue);
+
+            var result = _sut.Method9(firstValue, secondValue);
+            Assert.Equal("Odd", result);
 
         }
 
