@@ -46,13 +46,13 @@ namespace MoqKata.Tests
         {
             //TODO - #2 - Verify that the result of calling sut.Method2() returns the value of 'Property1' of the IDependency1
 
-            string expectedProperty1Value = "TestValue";
-            _testDependency1.Setup(d => d.Property1).Returns(expectedProperty1Value);
+            string expectedPropertyValue = "TestValue";
+            _testDependency1.Setup(d => d.Property1).Returns(expectedPropertyValue);
 
             var result = _sut.Method2();
 
             // verify that the result matches the expected Property1 value
-            Assert.Equal(expectedProperty1Value, result);
+            Assert.Equal(expectedPropertyValue, result);
         }
 
         [Fact]
