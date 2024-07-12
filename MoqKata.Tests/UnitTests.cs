@@ -157,6 +157,8 @@ namespace MoqKata.Tests
             //TODO - #10 - Verify that Idependency2.Property1.NestedCalculate(int,int) is invoked with the same values passed to sut.Method8()
             int firstValue = 10;
             int secondValue = 10;
+            
+            _testDependency2.Setup(d => d.Property1).Returns(_testDependency3.Object);
 
             _sut.Method8(firstValue, secondValue);
             _testDependency2.Verify(d => d.Property1.NestedCalculate(firstValue,secondValue),Times.Once);
